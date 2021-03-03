@@ -1,6 +1,6 @@
 import flask
 from flask import jsonify
-from datetime import datetime
+from flask import  request
 import psycopg2
 from datetime import datetime as dt
 
@@ -13,7 +13,7 @@ def create_connection():
     return conn
 
 
-@app.route("/subsriber/display/<string:email>", methods=['GET'])
+@app.route("/subscriber/display/<string:email>", methods=['GET'])
 def view_status(email):
     try:
         connection = create_connection()
@@ -41,7 +41,7 @@ def view_status(email):
                 'details': {
                     'message': 'User Not Found'
                 },
-                'HTTPCode': 400,
+                'HTTPCode': 200,
             })
         cursor.close()
     except:
@@ -60,7 +60,6 @@ def subscribe(email):
         cursor = connection.cursor()
         cursor.execute(f"select * from public.Subscribers where email='{email}';")
         user = cursor.fetchall()
-        print(user)
         if user:
             cursor.execute(
                 f"UPDATE Subscribers SET status = '{not user[0][3]}', timestamp = '{dt.now()}' where email='{email}';")
@@ -79,7 +78,7 @@ def subscribe(email):
             connection.commit()
             connection.close()
             return jsonify({
-                'HTTPCode': 200,
+                'HTTPCode': 201,
                 'change': 'true',
                 'new': 'true',
                 'details': {
