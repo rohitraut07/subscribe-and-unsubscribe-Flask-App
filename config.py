@@ -8,7 +8,12 @@ class Config:
     """
     TESTING = True
     DEBUG = True
-    FLASK_ENV = 'development'
+    ENV = 'development'
+    DATABASE_NAME = environ.get("DATABASE_NAME")
+    DATABASE_PASSWORD = environ.get("DATABASE_PASSWORD")
+    DATABASE_USER = environ.get("DATABASE_USER")
+    DATABASE_URL = environ.get("DATABASE_URI")
+    DATABASE_PORT = environ.get("DATABASE_PORT")
 
 
 class DevConfig(Config):
@@ -17,7 +22,12 @@ class DevConfig(Config):
     """
     TESTING = True
     DEBUG = True
-    FLASK_ENV = 'development'
+    ENV = 'development'
+    DATABASE_NAME = environ.get("DATABASE_NAME")
+    DATABASE_PASSWORD = environ.get("DATABASE_PASSWORD")
+    DATABASE_USER = environ.get("DATABASE_USER")
+    DATABASE_URL = environ.get("DATABASE_URI")
+    DATABASE_PORT = environ.get("DATABASE_PORT")
 
 
 class ProdConfig(Config):
@@ -26,6 +36,10 @@ class ProdConfig(Config):
     """
     TESTING = False
     DEBUG = False
-    FLASK_ENV = 'production'
-    DATABASE_URL = environ.get("PROD_DATABASE_URI")
+    ENV = 'production'
+    DATABASE_URL = environ.get("DATABASE_URI")
+    DATABASE_NAME = environ.get("DATABASE_NAME")
+    DATABASE_PASSWORD = environ.get("DATABASE_PASSWORD")
+    DATABASE_USER = environ.get("DATABASE_USER")
+    DATABASE_PORT = environ.get("DATABASE_PORT")
 
