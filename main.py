@@ -5,7 +5,7 @@ import psycopg2
 from datetime import datetime as dt
 
 app = flask.Flask(__name__)
-app.config["DEBUG"] = True
+app.config.from_object('config.DevConfig')
 
 
 def create_connection():
