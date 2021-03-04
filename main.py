@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime as dt
+import logging
 
 app = Flask(__name__)
 app.config.from_object('config.DevConfig')
@@ -8,6 +9,9 @@ app.config.from_object('config.DevConfig')
 app.config[
     'SQLALCHEMY_DATABASE_URI'] = f"postgresql://{app.config['DATABASE_USER']}:{app.config['DATABASE_PASSWORD']}@{app.config['DATABASE_URI']}:{app.config['DATABASE_PORT']}/{app.config['DATABASE_NAME']}"
 db = SQLAlchemy(app)
+
+logging.basicConfig(filename='app.log', level=logging.WARNING,
+                    format=f'%(asctime)s %(levelname)s %(name)s: %(message)s')
 
 
 class Subscription(db.Model):
@@ -21,17 +25,16 @@ class Subscription(db.Model):
         self.email = email
         self.subscription = True
 
-
-@app.route("/subscription", methods=['POST'])
+@app.route("/api/subscription", methods=['POST'])
 def insert_user():
     data = request.get_json()
-    print(data['email'])
     user = Subscription.query.filter_by(email=data['email']).first()
     if not user:
         user = Subscription(data['email'])
         db.session.add(user)
         db.session.commit()
         return jsonify({
+            'HTTPCode': 200,
             'change': 'true',
             'new': 'true',
             'details': {
@@ -46,23 +49,22 @@ def insert_user():
                 'timeStamp': user.timestamp,
                 'subscribed': user.subscription
             },
+            'HTTPCode': 200,
             'change': False,
             'new': False,
-            'details': "User already exist"
         })
 
 
-@app.route("/subscription", methods=['PUT'])
+@app.route("/api/subscription", methods=['PUT'])
 def update_user():
     data = request.get_json()
-    print("hi", data['email'])
     update_this = Subscription.query.filter_by(email=data['email']).first()
     if update_this:
         update_this.subscription = not update_this.subscription
         update_this.timestamp = dt.now()
         db.session.commit()
-        print("updated")
         return jsonify({
+            'HTTPCode': 200,
             'change': 'true',
             'new': 'false',
             'details': {
@@ -71,6 +73,7 @@ def update_user():
         })
     else:
         return jsonify({
+            'HTTPCode': 200,
             'change': False,
             'new': False,
             'details': {
