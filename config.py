@@ -37,7 +37,16 @@ class DevConfig(Config):
 
 class ProdConfig(Config):
     """
-    Production Configuration
+    Production Environment Config FIle Configuration
+    Environment Required Variable:
+        variable         :     operation                 :      example
+    ==================================================================================================================
+        DATABASE_USER    : export user name              :       "root"
+        DATABASE_NAME    : export name                   :       "mydb"
+        DATABASE_PASSWORD: export DATABASE_USER password :       "xyz"
+        DATABASE_URI     : export databse URI            :       dialect+driver://username:password@host:port/database
+        DATABASE_PORT    : export port                   :       "5432"
+    ==================================================================================================================
     """
     TESTING = False
     DEBUG = False

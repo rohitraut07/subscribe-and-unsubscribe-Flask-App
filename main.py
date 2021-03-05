@@ -8,6 +8,9 @@ app.config.from_object('config.DevConfig')
 
 app.config[
     'SQLALCHEMY_DATABASE_URI'] = f"postgresql://{app.config['DATABASE_USER']}:{app.config['DATABASE_PASSWORD']}@{app.config['DATABASE_URI']}:{app.config['DATABASE_PORT']}/{app.config['DATABASE_NAME']}"
+
+
+# TODO: Have to add auto commit for SqlAlchemy
 db = SQLAlchemy(app)
 
 logging.basicConfig(filename=app.config['LOG_FILE'], level=app.config['LOG_TYPE'],
@@ -15,7 +18,21 @@ logging.basicConfig(filename=app.config['LOG_FILE'], level=app.config['LOG_TYPE'
 
 
 class Subscription(db.Model):
-    """Subscription table"""
+    """
+    Subscription table
+    ### Ancestors
+    * flask_sqlalchemy.model.Model
+
+     #Class Attributes
+    `email`
+    `id'
+    `subscription`
+    `timestamp`
+
+    constructor:
+             # Required Email only
+             def __init__(self, email, )
+    """
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String(120), unique=True)
     subscription = db.Column(db.Boolean, unique=False, default=True)
@@ -28,6 +45,20 @@ class Subscription(db.Model):
 
 @app.route("/api/subscription", methods=['POST'])
 def insert_user():
+    """
+    Input:
+        Type: json
+        example: {
+                    "email": "example@gmail.com"
+                 }
+
+    Operation:
+            1. add log  in log file
+                  example@eail.com added to database
+                  User already exist in database
+            2. Add email in Database if not exist
+            3. return info of email if exist in Database
+    """
     data = request.get_json()
     user = Subscription.query.filter_by(email=data['email']).first()
     if not user:
@@ -60,6 +91,20 @@ def insert_user():
 
 @app.route("/api/subscription", methods=['PUT'])
 def update_user():
+    """
+    Input:
+       Type: Json
+       Example:
+             {
+                'email': "example@gmail.com"
+             }
+    Operation:
+         1. Add logs in log file either
+                    i. subscription changed
+                    ii. user not exist in database
+         2. Change Subscription Status<boolean> in database if email exist in database
+         3. return user not exist with status code 404 if email not exist in database
+    """
     data = request.get_json()
     update_this = Subscription.query.filter_by(email=data['email']).first()
     if update_this:
@@ -88,5 +133,9 @@ def update_user():
 
 
 if __name__ == "__main__":
+    """
+    Run's Flask Application
+    Create Table subscription if not exist in database
+    """
     db.create_all()
     app.run()
