@@ -10,7 +10,7 @@ app.config[
     'SQLALCHEMY_DATABASE_URI'] = f"postgresql://{app.config['DATABASE_USER']}:{app.config['DATABASE_PASSWORD']}@{app.config['DATABASE_URI']}:{app.config['DATABASE_PORT']}/{app.config['DATABASE_NAME']}"
 db = SQLAlchemy(app)
 
-logging.basicConfig(filename='app.log', level=logging.DEBUG,
+logging.basicConfig(filename=app.config['LOG_FILE'], level=app.config['LOG_TYPE'],
                     format=f'%(asctime)s  %(levelname)s  %(name)s  %(threadName)s : %(message)s')
 
 
