@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime as dt
 import logging
@@ -10,7 +10,8 @@ app.config[
     'SQLALCHEMY_DATABASE_URI'] = f"postgresql://{app.config['DATABASE_USER']}:{app.config['DATABASE_PASSWORD']}@{app.config['DATABASE_URI']}:{app.config['DATABASE_PORT']}/{app.config['DATABASE_NAME']}"
 db = SQLAlchemy(app)
 
-logging.basicConfig(filename='app.log', level=logging.DEBUG, format=f'%(asctime)s  %(levelname)s  %(name)s  %(threadName)s : %(message)s')
+logging.basicConfig(filename='app.log', level=logging.DEBUG,
+                    format=f'%(asctime)s  %(levelname)s  %(name)s  %(threadName)s : %(message)s')
 
 
 class Subscription(db.Model):
@@ -24,6 +25,7 @@ class Subscription(db.Model):
         self.email = email
         self.subscription = True
 
+
 @app.route("/api/subscription", methods=['POST'])
 def insert_user():
     data = request.get_json()
@@ -32,8 +34,9 @@ def insert_user():
         user = Subscription(data['email'])
         db.session.add(user)
         db.session.commit()
+        app.logger.info('%s : successfully subscribed', user.email)
         return jsonify({
-            'status': 200,
+            'status': 201,
             'change': 'true',
             'new': 'true',
             'details': {
@@ -41,6 +44,7 @@ def insert_user():
             }
         })
     else:
+        app.logger.info('%s : User already exist', user.email)
         return jsonify({
             'user': {
                 'id': user.id,
@@ -62,6 +66,7 @@ def update_user():
         update_this.subscription = not update_this.subscription
         update_this.timestamp = dt.now()
         db.session.commit()
+        app.logger.warning('%s : Subscription Changed', data['email'])
         return jsonify({
             'status': 200,
             'change': 'true',
@@ -71,14 +76,15 @@ def update_user():
             }
         })
     else:
-        return jsonify({
-            'status': 200,
+        app.logger.warning('%s : User not exist', data['email'])
+        return make_response(jsonify({
+            'status': 404,
             'change': False,
-            'new': False,
+            'new': None,
             'details': {
                 'message': 'User not exist'
             }
-        })
+        }), 404)
 
 
 if __name__ == "__main__":
