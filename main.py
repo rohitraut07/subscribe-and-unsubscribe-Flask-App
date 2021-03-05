@@ -33,7 +33,7 @@ def insert_user():
         db.session.add(user)
         db.session.commit()
         return jsonify({
-            'HTTPCode': 200,
+            'status': 200,
             'change': 'true',
             'new': 'true',
             'details': {
@@ -48,7 +48,7 @@ def insert_user():
                 'timeStamp': user.timestamp,
                 'subscribed': user.subscription
             },
-            'HTTPCode': 200,
+            'status': 200,
             'change': False,
             'new': False,
         })
@@ -63,7 +63,7 @@ def update_user():
         update_this.timestamp = dt.now()
         db.session.commit()
         return jsonify({
-            'HTTPCode': 200,
+            'status': 200,
             'change': 'true',
             'new': 'false',
             'details': {
@@ -72,7 +72,7 @@ def update_user():
         })
     else:
         return jsonify({
-            'HTTPCode': 200,
+            'status': 200,
             'change': False,
             'new': False,
             'details': {

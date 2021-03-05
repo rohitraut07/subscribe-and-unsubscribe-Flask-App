@@ -1,5 +1,6 @@
 """ Flask Configuration """
 from os import environ
+import logging
 
 
 class Config:
@@ -30,6 +31,8 @@ class DevConfig(Config):
     DATABASE_URI = '127.0.0.1'
     DATABASE_PORT = 5432
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    LOG_FILE = "app.log"
+    LOG_TYPE = logging.DEBUG
 
 
 class ProdConfig(Config):
@@ -45,3 +48,5 @@ class ProdConfig(Config):
     DATABASE_PASSWORD = environ.get("DATABASE_PASSWORD")
     DATABASE_URI = environ.get("DATABASE_URI")
     DATABASE_PORT = environ.get("DATABASE_PORT")
+    LOG_FILE = "app.log"
+    LOG_TYPE = logging.DEBUG
